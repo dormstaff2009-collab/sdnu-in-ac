@@ -170,7 +170,7 @@ export const IncidentFormModal: React.FC<IncidentFormModalProps> = ({
                 {initialData ? 'แก้ไขรายงานเหตุการณ์' : 'แบบฟอร์มรายงานเหตุการณ์ไม่ปกติ (SDNU)'}
               </h2>
               <p className="text-xs text-stone-300">
-                หอพักบุคลากรมหาวิทยาลัยนเรศวร • บันทึกเรียลไทม์ไปยัง Firebase `sdnu-in-ac`
+                หอพักบุคลากร มหาวิทยาลัยนเรศวร • บันทึกเรียลไทม์ไปยัง Firebase `sdnu-in-ac`
               </p>
             </div>
           </div>

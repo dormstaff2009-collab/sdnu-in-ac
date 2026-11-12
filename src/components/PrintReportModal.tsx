@@ -582,7 +582,7 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
         {/* Modal Bottom Footer (Hidden during print) */}
         <div className="p-4 px-6 bg-[#f8f5f0] border-t border-stone-200 flex flex-wrap items-center justify-between gap-3 print:hidden">
           <p className="text-xs text-stone-500">
-            * เอกสารนี้จัดพิมพ์จากระบบรายงานเหตุการณ์ไม่ปกติ หอพักบุคลากรมหาวิทยาลัยนเรศวร (SDNU)
+            * เอกสารนี้จัดพิมพ์จากระบบรายงานเหตุการณ์ไม่ปกติ หอพักบุคลากร มหาวิทยาลัยนเรศวร (SDNU Incident Reporting)
           </p>
 
           <div className="flex items-center gap-2">

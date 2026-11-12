@@ -47,7 +47,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </span>
               </div>
               <p className="text-xs text-stone-500 hidden sm:block">
-                ระบบรายงานเหตุการณ์ไม่ปกติ หอพักบุคลากรมหาวิทยาลัยนเรศวร
+                ระบบรายงานเหตุการณ์ไม่ปกติ หอพักบุคลากร มหาวิทยาลัยนเรศวร
               </p>
             </div>
           </div>

@@ -159,10 +159,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <div className="space-y-2 max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-medium text-amber-200 border border-white/10">
               <TrendingUp className="w-3.5 h-3.5 text-amber-300" />
-              หอพักบุคลากรมหาวิทยาลัยนเรศวร (มน.นิเวศ 1 - 15)
+              หอพักบุคลากร มหาวิทยาลัยนเรศวร (มน.นิเวศ 1 - 15)
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-              ศูนย์ข้อมูลสรุปสถิติเหตุการณ์ไม่ปกติ & อุบัติเหตุ
+              ข้อมูลสรุปสถิติเหตุการณ์ไม่ปกติภายในหอพักบุคลากร
             </h1>
             <p className="text-sm text-amber-100/80 leading-relaxed">
               ติดตามรายงานสถานการณ์ฉุกเฉินและอุบัติเหตุภายในหอพักบุคลากรแบบเรียลไทม์

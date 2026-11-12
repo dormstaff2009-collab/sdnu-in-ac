@@ -45,14 +45,9 @@ export default function App() {
   const [incidentToDelete, setIncidentToDelete] = useState<Incident | null>(null);
   const [incidentToPrint, setIncidentToPrint] = useState<Incident | null>(null);
 
-  // Initialize and subscribe
+  // Initialize and subscribe to real-time updates from Firebase
   useEffect(() => {
-    // 1. Check & seed initial data if empty
-    seedInitialSDNUDataIfEmpty().catch((err) => {
-      console.warn('Initial seed error:', err);
-    });
-
-    // 2. Real-time subscription to incidents
+    // 1. Real-time subscription to incidents
     const unsubIncidents = subscribeToIncidents(
       (data) => {
         setIncidents(data);
@@ -202,7 +197,7 @@ export default function App() {
       <footer className="bg-[#fcfaf7] border-t border-stone-200/80 py-6 text-center text-xs text-stone-500">
         <div className="max-w-7xl mx-auto px-4 space-y-1">
           <p className="font-semibold text-stone-700">
-            ระบบรายงานเหตุการณ์ไม่ปกติและอุบัติเหตุภายในหอพักบุคลากร มหาวิทยาลัยนเรศวร (SDNU)
+            ระบบรายงานเหตุการณ์ไม่ปกติภายในหอพักบุคลากร มหาวิทยาลัยนเรศวร (SDNU Incident Reporting)
           </p>
           <p className="text-[11px] text-stone-400">
             เชื่อมต่อฐานข้อมูล Google Cloud Firestore Project: <span className="font-mono font-medium text-amber-800">sdnu-in-ac</span>

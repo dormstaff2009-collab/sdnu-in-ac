@@ -22,7 +22,11 @@ import {
 } from 'lucide-react';
 import { Incident, FilterState } from '../types';
 import { exportIncidentsToCSV } from '../utils/exportUtils';
-import { seedInitialSDNUDataIfEmpty, updateIncidentStatus } from '../services/incidentService';
+import {
+  seedInitialSDNUDataIfEmpty,
+  clearAllSampleIncidents,
+  updateIncidentStatus,
+} from '../services/incidentService';
 
 interface IncidentListProps {
   incidents: Incident[];
@@ -44,6 +48,11 @@ export const IncidentList: React.FC<IncidentListProps> = ({
   const [locationFilter, setLocationFilter] = useState('all');
   const [reporterRoleFilter, setReporterRoleFilter] = useState('all');
   const [isSeeding, setIsSeeding] = useState(false);
+  const [isClearingSamples, setIsClearingSamples] = useState(false);
+
+  const sampleIncidentsCount = useMemo(() => {
+    return incidents.filter((inc) => inc.id.startsWith('SDNU-')).length;
+  }, [incidents]);
 
   const filteredIncidents = useMemo(() => {
     return incidents.filter((inc) => {
@@ -73,8 +82,14 @@ export const IncidentList: React.FC<IncidentListProps> = ({
 
   const handleSeedData = async () => {
     setIsSeeding(true);
-    await seedInitialSDNUDataIfEmpty();
+    await seedInitialSDNUDataIfEmpty(true);
     setIsSeeding(false);
+  };
+
+  const handleClearAllSamples = async () => {
+    setIsClearingSamples(true);
+    await clearAllSampleIncidents();
+    setIsClearingSamples(false);
   };
 
   return (
@@ -86,7 +101,7 @@ export const IncidentList: React.FC<IncidentListProps> = ({
             ระบบบันทึกและจัดการรายการเหตุการณ์ไม่ปกติ ({filteredIncidents.length} รายการ)
           </h2>
           <p className="text-xs text-stone-500 mt-0.5">
-            หอพักบุคลากรมหาวิทยาลัยนเรศวร • ค้นหา ตรวจสอบสถานะ และส่งออกรายงาน CSV
+            หอพักบุคลากร มหาวิทยาลัยนเรศวร • ค้นหา ตรวจสอบสถานะ และส่งออกรายงาน CSV
           </p>
         </div>
 
@@ -99,6 +114,19 @@ export const IncidentList: React.FC<IncidentListProps> = ({
             <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
             ส่งออก CSV
           </button>
+
+          {sampleIncidentsCount > 0 && (
+            <button
+              type="button"
+              disabled={isClearingSamples}
+              onClick={handleClearAllSamples}
+              className="px-3 py-2 bg-stone-100 hover:bg-red-50 border border-stone-200 hover:border-red-200 text-stone-600 hover:text-red-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors"
+              title="ลบรายการเหตุการณ์ตัวอย่างที่ระบบสร้างขึ้นทั้งหมด"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span>{isClearingSamples ? 'กำลังลบ...' : `ลบข้อมูลตัวอย่าง (${sampleIncidentsCount})`}</span>
+            </button>
+          )}
 
           {incidents.length === 0 && (
             <button
@@ -196,12 +224,39 @@ export const IncidentList: React.FC<IncidentListProps> = ({
       {/* Table & Cards */}
       <div className="bg-[#fcfaf7] rounded-2xl border border-stone-200/90 shadow-xs overflow-hidden">
         {filteredIncidents.length === 0 ? (
-          <div className="p-12 text-center">
-            <AlertCircle className="w-10 h-10 text-stone-300 mx-auto mb-2" />
-            <h3 className="font-bold text-stone-700 text-sm">ไม่พบรายการเหตุการณ์ที่ตรงกับเงื่อนไข</h3>
-            <p className="text-xs text-stone-400 mt-1">
-              ลองปรับเปลี่ยนตัวกรองค้นหา หรือสร้างรายงานเหตุการณ์ใหม่
+          <div className="p-12 text-center max-w-md mx-auto space-y-3">
+            <AlertCircle className="w-10 h-10 text-stone-300 mx-auto mb-1" />
+            <h3 className="font-bold text-stone-800 text-sm">
+              {incidents.length === 0
+                ? 'ฐานข้อมูลปัจจุบันว่าง (ไม่มีรายการเหตุการณ์)'
+                : 'ไม่พบรายการเหตุการณ์ที่ตรงกับเงื่อนไขการค้นหา'}
+            </h3>
+            <p className="text-xs text-stone-500">
+              {incidents.length === 0
+                ? 'คุณสามารถเริ่มต้นบันทึกรายงานใหม่ได้ทันที หรือโหลดตัวอย่างข้อมูล มน.นิเวศ เพื่อทดสอบระบบ'
+                : 'ลองปรับเปลี่ยนตัวกรองค้นหา หรือกดปุ่มเพิ่มรายงานเหตุการณ์ใหม่'}
             </p>
+            {incidents.length === 0 && (
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={onOpenReportModal}
+                  className="px-4 py-2 bg-gradient-to-r from-amber-800 via-amber-700 to-stone-800 text-white rounded-xl text-xs font-bold shadow-xs hover:from-amber-900 hover:to-stone-900 transition-all flex items-center gap-1.5"
+                >
+                  <PlusCircle className="w-4 h-4" />
+                  เพิ่มรายงานเหตุการณ์ใหม่
+                </button>
+                <button
+                  type="button"
+                  disabled={isSeeding}
+                  onClick={handleSeedData}
+                  className="px-4 py-2 bg-amber-50 border border-amber-200 text-amber-900 hover:bg-amber-100 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                >
+                  <Sparkles className="w-4 h-4 text-amber-700" />
+                  {isSeeding ? 'กำลังเตรียมข้อมูล...' : 'โหลดตัวอย่างข้อมูล (8 รายการ)'}
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <div className="overflow-x-auto">

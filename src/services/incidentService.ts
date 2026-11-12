@@ -253,20 +253,60 @@ export async function deleteIncident(id: string): Promise<void> {
   const docRef = doc(db, INCIDENTS_COLLECTION, id);
   try {
     await deleteDoc(docRef);
+    // If user deletes any system-created sample incident, mark that user has managed samples
+    if (id.startsWith('SDNU-')) {
+      try {
+        localStorage.setItem('sdnu_user_cleared_samples', 'true');
+      } catch (_) {}
+    }
   } catch (error) {
     handleFirestoreError(error, OperationType.DELETE, `${INCIDENTS_COLLECTION}/${id}`);
   }
 }
 
 /**
- * Seed realistic SDNU incident samples if database is currently empty
+ * Clear all system-created demo incidents in one action
  */
-export async function seedInitialSDNUDataIfEmpty(): Promise<boolean> {
+export async function clearAllSampleIncidents(): Promise<number> {
   try {
     const snap = await getDocs(collection(db, INCIDENTS_COLLECTION));
-    if (!snap.empty) {
+    let deletedCount = 0;
+    for (const d of snap.docs) {
+      if (d.id.startsWith('SDNU-')) {
+        await deleteDoc(doc(db, INCIDENTS_COLLECTION, d.id));
+        deletedCount++;
+      }
+    }
+    try {
+      localStorage.setItem('sdnu_user_cleared_samples', 'true');
+    } catch (_) {}
+    return deletedCount;
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, INCIDENTS_COLLECTION);
+  }
+}
+
+/**
+ * Seed realistic SDNU incident samples - ONLY when requested or explicitly permitted
+ */
+export async function seedInitialSDNUDataIfEmpty(force = false): Promise<boolean> {
+  try {
+    // Check if user has previously deleted/cleared sample data - NEVER re-seed unless forced
+    try {
+      const userCleared = localStorage.getItem('sdnu_user_cleared_samples');
+      if (userCleared === 'true' && !force) {
+        return false;
+      }
+    } catch (_) {}
+
+    const snap = await getDocs(collection(db, INCIDENTS_COLLECTION));
+    if (!snap.empty && !force) {
       return false; // Already has data
     }
+
+    try {
+      localStorage.removeItem('sdnu_user_cleared_samples');
+    } catch (_) {}
 
     const currentYear = new Date().getFullYear();
     const currentMonth = (new Date().getMonth() + 1).toString().padStart(2, '0');

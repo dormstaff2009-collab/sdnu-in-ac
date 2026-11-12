@@ -1,0 +1,143 @@
+{
+  "entities": {
+    "Incident": {
+      "title": "Incident",
+      "description": "SDNU Dormitory incident and accident reporting record",
+      "type": "object",
+      "properties": {
+        "incidentDate": {
+          "type": "string",
+          "description": "Date when the incident occurred (YYYY-MM-DD)",
+          "maxLength": 20
+        },
+        "incidentTime": {
+          "type": "string",
+          "description": "Time when the incident occurred (HH:mm)",
+          "maxLength": 10
+        },
+        "reportDay": {
+          "type": "number",
+          "description": "Day of the month (1-31)"
+        },
+        "reportMonth": {
+          "type": "number",
+          "description": "Month of the year (1-12)"
+        },
+        "reportYear": {
+          "type": "number",
+          "description": "Year of report"
+        },
+        "category": {
+          "type": "string",
+          "description": "Category of incident (e.g., ระบบไฟฟ้า, ระบบน้ำ, ภัยธรรมชาติ, etc.)",
+          "maxLength": 100
+        },
+        "location": {
+          "type": "string",
+          "description": "Dormitory building name (มน.นิเวศ 1 - 15)",
+          "maxLength": 50
+        },
+        "locationDetail": {
+          "type": "string",
+          "description": "Specific room or area details",
+          "maxLength": 200
+        },
+        "victimType": {
+          "type": "string",
+          "description": "Victim type (ผู้พักอาศัย, ผู้พักอาศัยร่วม, อื่นๆ)",
+          "maxLength": 100
+        },
+        "victimName": {
+          "type": "string",
+          "description": "Name of the victim if available",
+          "maxLength": 150
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of the incident",
+          "maxLength": 3000
+        },
+        "actionTaken": {
+          "type": "string",
+          "description": "Actions taken immediately upon incident occurrence",
+          "maxLength": 3000
+        },
+        "photos": {
+          "type": "array",
+          "description": "Up to 3 photo evidence URLs or compressed strings"
+        },
+        "reporterRole": {
+          "type": "string",
+          "description": "Role of reporter (ผู้จัดการ, รปภ.ประจำจุด, ผู้ประสานงาน, หัวหน้างาน)",
+          "maxLength": 100
+        },
+        "reporterName": {
+          "type": "string",
+          "description": "Full name of reporter",
+          "maxLength": 150
+        },
+        "reporterPhone": {
+          "type": "string",
+          "description": "Contact phone of reporter",
+          "maxLength": 30
+        },
+        "status": {
+          "type": "string",
+          "description": "Status of the incident resolution",
+          "enum": ["received", "in_progress", "resolved", "closed"],
+          "maxLength": 30
+        },
+        "severity": {
+          "type": "string",
+          "description": "Severity level",
+          "enum": ["low", "medium", "high", "critical"],
+          "maxLength": 20
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Server timestamp of creation"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Server timestamp of last update"
+        }
+      },
+      "required": [
+        "incidentDate",
+        "category",
+        "location",
+        "victimType",
+        "description",
+        "actionTaken",
+        "reporterRole",
+        "reporterName"
+      ]
+    },
+    "MasterConfig": {
+      "title": "MasterConfig",
+      "description": "Dynamic lookup options for incident categories, victim types, locations, and roles",
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "description": "List of available string options"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Server timestamp"
+        }
+      },
+      "required": ["items"]
+    }
+  },
+  "firestore": {
+    "/incidents/{incidentId}": {
+      "schema": "Incident",
+      "description": "Collection of dormitory incident and accident reports"
+    },
+    "/master_data/{configId}": {
+      "schema": "MasterConfig",
+      "description": "Collection for dynamic category, victim type, and role choices"
+    }
+  }
+}

@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidIncident(data) {
+      return data.incidentDate is string && data.incidentDate.size() <= 20
+        && data.category is string && data.category.size() <= 100
+        && data.location is string && data.location.size() <= 50
+        && data.victimType is string && data.victimType.size() <= 100
+        && data.description is string && data.description.size() <= 3000
+        && data.actionTaken is string && data.actionTaken.size() <= 3000
+        && data.reporterRole is string && data.reporterRole.size() <= 100
+        && data.reporterName is string && data.reporterName.size() <= 150
+        && (!('status' in data) || (data.status is string && data.status.size() <= 30))
+        && (!('photos' in data) || (data.photos is list && data.photos.size() <= 3))
+        && (!('locationDetail' in data) || (data.locationDetail is string && data.locationDetail.size() <= 200))
+        && (!('victimName' in data) || (data.victimName is string && data.victimName.size() <= 150))
+        && (!('reporterPhone' in data) || (data.reporterPhone is string && data.reporterPhone.size() <= 30))
+        && (!('severity' in data) || (data.severity in ['low', 'medium', 'high', 'critical']));
+    }
+
+    function isValidMasterConfig(data) {
+      return data.items is list && data.items.size() <= 50;
+    }
+
+    // Incidents Collection
+    match /incidents/{incidentId} {
+      allow get: if isValidId(incidentId);
+      allow list: if true;
+
+      allow create: if isValidId(incidentId)
+        && isValidIncident(incoming());
+
+      allow update: if isValidId(incidentId)
+        && isValidIncident(incoming());
+
+      allow delete: if isValidId(incidentId);
+    }
+
+    // Master Config Collection
+    match /master_data/{configId} {
+      allow get: if isValidId(configId);
+      allow list: if true;
+
+      allow create, update: if isValidId(configId)
+        && isValidMasterConfig(incoming());
+
+      allow delete: if false;
+    }
+  }
+}

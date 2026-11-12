@@ -162,7 +162,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               หอพักบุคลากร มหาวิทยาลัยนเรศวร (มน.นิเวศ 1 - 15)
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-              ข้อมูลสรุปสถิติเหตุการณ์ไม่ปกติภายในหอพักบุคลากร
+              ข้อมูลสรุปสถิติเหตุการณ์ไม่ปกติภายในหอพักบุคลากร มหาวิทยาลัยนเรศวร (SDNU Incident Reporting)
             </h1>
             <p className="text-sm text-amber-100/80 leading-relaxed">
               ติดตามรายงานสถานการณ์ฉุกเฉินและอุบัติเหตุภายในหอพักบุคลากรแบบเรียลไทม์

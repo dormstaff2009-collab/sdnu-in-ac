@@ -28,6 +28,29 @@ interface IncidentDetailModalProps {
   onOpenPrintModal: (incident: Incident) => void;
 }
 
+const THAI_MONTHS = [
+  'มกราคม',
+  'กุมภาพันธ์',
+  'มีนาคม',
+  'เมษายน',
+  'พฤษภาคม',
+  'มิถุนายน',
+  'กรกฎาคม',
+  'สิงหาคม',
+  'กันยายน',
+  'ตุลาคม',
+  'พฤศจิกายน',
+  'ธันวาคม',
+];
+
+const getThaiMonthName = (monthNum: number | string): string => {
+  const m = typeof monthNum === 'string' ? parseInt(monthNum, 10) : monthNum;
+  if (!isNaN(m) && m >= 1 && m <= 12) {
+    return THAI_MONTHS[m - 1];
+  }
+  return String(monthNum);
+};
+
 export const IncidentDetailModal: React.FC<IncidentDetailModalProps> = ({
   incident,
   onClose,
@@ -38,6 +61,9 @@ export const IncidentDetailModal: React.FC<IncidentDetailModalProps> = ({
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
 
   if (!incident) return null;
+
+  const thaiBuddhistYear = incident.reportYear + 543;
+  const thaiMonthName = getThaiMonthName(incident.reportMonth);
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-stone-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 print:p-0 print:bg-white">
@@ -86,10 +112,10 @@ export const IncidentDetailModal: React.FC<IncidentDetailModalProps> = ({
         {/* Printable Official Header */}
         <div className="hidden print:block p-6 border-b border-stone-300 text-center">
           <h1 className="text-xl font-bold text-stone-900">
-            มหาวิทยาลัยนเรศวร • กองอาคารสถานที่และหอพักบุคลากร
+            มหาวิทยาลัยนเรศวร • งานจัดการหอพักบุคลากร กองอาคารสถานที่
           </h1>
           <h2 className="text-base font-semibold text-stone-700 mt-1">
-            รายงานอุบัติเหตุและเหตุการณ์ไม่ปกติภายในหอพักบุคลากร (SDNU Incident Report)
+            รายงานเหตุการณ์ไม่ปกติภายในหอพักบุคลากร (SDNU Incident Report)
           </h2>
           <p className="text-xs text-stone-500 mt-1">
             รหัสเอกสาร: {incident.id} | วันที่บันทึกข้อมูล: {incident.incidentDate} เวลา {incident.incidentTime} น.
@@ -106,7 +132,7 @@ export const IncidentDetailModal: React.FC<IncidentDetailModalProps> = ({
                 วัน เวลา และสถานที่เกิดเหตุ
               </h4>
               <p className="text-stone-900 font-semibold">
-                วันที่ {incident.reportDay} เดือน {incident.reportMonth} พ.ศ. {incident.reportYear + 543} ({incident.incidentDate})
+                วันที่ {incident.reportDay} เดือน {thaiMonthName} พ.ศ. {thaiBuddhistYear} ({incident.incidentDate})
               </p>
               <p className="text-xs text-stone-600 flex items-center gap-1">
                 <Clock className="w-3.5 h-3.5 text-stone-400" />

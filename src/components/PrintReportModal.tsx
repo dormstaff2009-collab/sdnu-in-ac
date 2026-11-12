@@ -28,6 +28,29 @@ interface PrintReportModalProps {
   onClose: () => void;
 }
 
+const THAI_MONTHS = [
+  'มกราคม',
+  'กุมภาพันธ์',
+  'มีนาคม',
+  'เมษายน',
+  'พฤษภาคม',
+  'มิถุนายน',
+  'กรกฎาคม',
+  'สิงหาคม',
+  'กันยายน',
+  'ตุลาคม',
+  'พฤศจิกายน',
+  'ธันวาคม',
+];
+
+const getThaiMonthName = (monthNum: number | string): string => {
+  const m = typeof monthNum === 'string' ? parseInt(monthNum, 10) : monthNum;
+  if (!isNaN(m) && m >= 1 && m <= 12) {
+    return THAI_MONTHS[m - 1];
+  }
+  return String(monthNum);
+};
+
 export const PrintReportModal: React.FC<PrintReportModalProps> = ({
   isOpen,
   incident,
@@ -39,6 +62,7 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
   if (!isOpen || !incident) return null;
 
   const thaiBuddhistYear = incident.reportYear + 543;
+  const thaiMonthName = getThaiMonthName(incident.reportMonth);
 
   /**
    * Generates the standalone, beautiful official HTML document
@@ -180,8 +204,8 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
 
   <div class="header">
     <h1 class="univ-title">มหาวิทยาลัยนเรศวร • NARESUAN UNIVERSITY</h1>
-    <h2 class="sub-title">กองอาคารสถานที่และหอพักบุคลากร (SDNU)</h2>
-    <div style="font-size:15px;font-weight:700;margin-top:6px;color:#1c1917;">แบบบันทึกรายงานเหตุการณ์ไม่ปกติและอุบัติเหตุภายในหอพักบุคลากร</div>
+    <h2 class="sub-title">งานจัดการหอพักบุคลากร กองอาคารสถานที่</h2>
+    <div style="font-size:15px;font-weight:700;margin-top:6px;color:#1c1917;">แบบบันทึกรายงานเหตุการณ์ไม่ปกติภายในหอพักบุคลากร</div>
     <div class="doc-meta">
       <div>รหัสแบบรายงาน: <strong>${incident.id}</strong></div>
       <div>วันที่บันทึกระบบ: ${incident.incidentDate} (${incident.reportDay}/${incident.reportMonth}/${thaiBuddhistYear}) เวลา ${incident.incidentTime} น.</div>
@@ -199,7 +223,7 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
     </tr>
     <tr>
       <th>วัน/เวลา ที่เกิดเหตุ</th>
-      <td>วันที่ ${incident.reportDay} เดือน ${incident.reportMonth} พ.ศ. ${thaiBuddhistYear} เวลา ${incident.incidentTime} น.</td>
+      <td>วันที่ ${incident.reportDay} เดือน ${thaiMonthName} พ.ศ. ${thaiBuddhistYear} เวลา ${incident.incidentTime} น.</td>
     </tr>
     <tr>
       <th>ผู้ประสบเหตุ</th>
@@ -230,7 +254,7 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
       <div class="signature-block">
         ( ลงชื่อ ...................................................... )<br>
         ( ${incident.reporterName || '......................................................'} )<br>
-        ผู้รายงานเหตุการณ์ (${incident.reporterRole})<br>
+        ผู้รายงานเหตุการณ์<br>
         วันที่ ..... / ..... / .........
       </div>
     </div>
@@ -239,8 +263,8 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
       <div style="height:48px;"></div>
       <div class="signature-block">
         ( ลงชื่อ ...................................................... )<br>
-        ( ...................................................... )<br>
-        เจ้าหน้าที่ผู้รับแจ้ง / ผู้ตรวจสอบ<br>
+        ( นางมณีรัตน์ ดีดน้อย )<br>
+        หัวหน้างานจัดการหอพักบุคลากร<br>
         วันที่ ..... / ..... / .........
       </div>
     </div>
@@ -249,8 +273,8 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
       <div style="height:48px;"></div>
       <div class="signature-block">
         ( ลงชื่อ ...................................................... )<br>
-        ( ...................................................... )<br>
-        หัวหน้างาน / ผู้จัดการหอพักบุคลากร<br>
+        ( นายรุ่งรัตน์ พระนาค )<br>
+        ผู้อำนวยการกองอาคารสถานที่<br>
         วันที่ ..... / ..... / .........
       </div>
     </div>
@@ -318,7 +342,7 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
   const handleCopySummary = async () => {
     const text = `[แบบรายงานเหตุการณ์ไม่ปกติ SDNU - มหาวิทยาลัยนเรศวร]
 รหัส: ${incident.id}
-วันที่เกิดเหตุ: ${incident.reportDay}/${incident.reportMonth}/${thaiBuddhistYear} เวลา ${incident.incidentTime} น.
+วันที่เกิดเหตุ: วันที่ ${incident.reportDay} เดือน ${thaiMonthName} พ.ศ. ${thaiBuddhistYear} เวลา ${incident.incidentTime} น.
 ประเภท: ${incident.category}
 สถานที่: ${incident.location} ${incident.locationDetail ? `(${incident.locationDetail})` : ''}
 ผู้ประสบเหตุ: ${incident.victimType} ${incident.victimName ? `(${incident.victimName})` : ''}
@@ -347,7 +371,7 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
             <div>
               <h2 className="text-base font-bold">พิมพ์รายงานเหตุการณ์ (Official Incident Report)</h2>
               <p className="text-xs text-stone-300">
-                เอกสารทางการกองอาคารสถานที่และหอพักบุคลากร • มหาวิทยาลัยนเรศวร
+                เอกสารทางการงานจัดการหอพักบุคลากร กองอาคารสถานที่ • มหาวิทยาลัยนเรศวร
               </p>
             </div>
           </div>
@@ -417,10 +441,10 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
               มหาวิทยาลัยนเรศวร • NARESUAN UNIVERSITY
             </h1>
             <h2 className="text-sm font-semibold text-stone-700 mt-0.5">
-              กองอาคารสถานที่และหอพักบุคลากร (SDNU)
+              งานจัดการหอพักบุคลากร กองอาคารสถานที่
             </h2>
             <div className="text-base font-bold text-stone-900 mt-2 bg-amber-50/70 inline-block px-4 py-1 rounded-lg border border-amber-200/60">
-              แบบบันทึกรายงานเหตุการณ์ไม่ปกติและอุบัติเหตุภายในหอพักบุคลากร
+              แบบบันทึกรายงานเหตุการณ์ไม่ปกติภายในหอพักบุคลากร
             </div>
             <div className="flex flex-wrap items-center justify-between text-xs text-stone-500 mt-3 pt-2 border-t border-stone-200">
               <div>
@@ -458,7 +482,7 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
                     วัน เวลา ที่เกิดเหตุ
                   </td>
                   <td className="py-2.5 px-4 text-stone-800">
-                    วันที่ {incident.reportDay} เดือน {incident.reportMonth} พ.ศ. {thaiBuddhistYear} เวลา {incident.incidentTime} น.
+                    วันที่ {incident.reportDay} เดือน {thaiMonthName} พ.ศ. {thaiBuddhistYear} เวลา {incident.incidentTime} น.
                   </td>
                 </tr>
                 <tr>
@@ -549,8 +573,8 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
                 <span className="text-stone-400">...................................................</span>
               </div>
               <div className="border-t border-dotted border-stone-400 pt-2 text-stone-700">
-                <p className="font-semibold">({incident.reporterName})</p>
-                <p className="text-[11px] text-stone-500">ผู้รายงานเหตุการณ์ ({incident.reporterRole})</p>
+                <p className="font-semibold">({incident.reporterName || '...................................................'})</p>
+                <p className="text-[11px] text-stone-500">ผู้รายงานเหตุการณ์</p>
                 <p className="text-[11px] text-stone-400 mt-1">วันที่ ..... / ..... / .........</p>
               </div>
             </div>
@@ -560,8 +584,8 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
                 <span className="text-stone-400">...................................................</span>
               </div>
               <div className="border-t border-dotted border-stone-400 pt-2 text-stone-700">
-                <p className="font-semibold">(...................................................)</p>
-                <p className="text-[11px] text-stone-500">เจ้าหน้าที่ผู้รับแจ้ง / ผู้ตรวจสอบ</p>
+                <p className="font-semibold">(นางมณีรัตน์ ดีดน้อย)</p>
+                <p className="text-[11px] text-stone-500">หัวหน้างานจัดการหอพักบุคลากร</p>
                 <p className="text-[11px] text-stone-400 mt-1">วันที่ ..... / ..... / .........</p>
               </div>
             </div>
@@ -571,8 +595,8 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
                 <span className="text-stone-400">...................................................</span>
               </div>
               <div className="border-t border-dotted border-stone-400 pt-2 text-stone-700">
-                <p className="font-semibold">(...................................................)</p>
-                <p className="text-[11px] text-stone-500">หัวหน้างาน / ผู้จัดการหอพักบุคลากร</p>
+                <p className="font-semibold">(นายรุ่งรัตน์ พระนาค)</p>
+                <p className="text-[11px] text-stone-500">ผู้อำนวยการกองอาคารสถานที่</p>
                 <p className="text-[11px] text-stone-400 mt-1">วันที่ ..... / ..... / .........</p>
               </div>
             </div>
